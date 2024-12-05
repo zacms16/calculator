@@ -1,5 +1,3 @@
-// TODO: display the current in progress equation
-
 // * Variables * //
 let operator = "none";
 let num1 = "none";
@@ -29,19 +27,15 @@ buttons.forEach((element) => {
     }
 
     if (element.textContent === "+/-") {
-      if (num1 !== "none" && num2 === "none") {
-        if (Number(num1) < 0) {
-          return (num1 = Math.abs(num1));
-        } else {
-          return (num1 = -num1);
-        }
-      } else if (num1 !== "none" && num2 !== "none") {
-        if (Number(num2) < 0) {
-          return (num2 = Math.abs(num2));
-        } else {
-          return (num2 = -num2);
-        }
+      if (num1 !== "none" && operator === "none") {
+        num1 = toggleSign(num1);
+      } else if (num1 !== "none" && operator !== "none" && num2 === "none") {
+        num2 = toggleSign(num2);
+      } else if (num1 !== "none" && operator !== "none" && num2 !== "none") {
+        num2 = toggleSign(num2);
       }
+      updateEquationDisplay();
+      return; // Prevent further processing for +/- button
     }
 
     if (element.textContent === "%") {
@@ -81,11 +75,19 @@ buttons.forEach((element) => {
         num2 = `${num2}${element.textContent}`;
       }
     }
+
+    updateEquationDisplay();
   };
 });
 
 // * Functions * //
-// This function performs the calculation based on the given operator and updates the display with the result.
+function updateEquationDisplay() {
+  let equation = `${num1 !== "none" ? num1 : ""} ${operator !== "none" ? operator : ""} ${
+    num2 !== "none" ? num2 : ""
+  }`;
+  displayText.textContent = equation.trim();
+}
+
 function operate(num1, operator, num2) {
   let fNum1 = Number(num1);
   let fNum2 = Number(num2);
@@ -118,20 +120,9 @@ function updateDisplay(output) {
   resetVariables();
   num1 = output.toString();
 }
-// This function resets the calculator variables to their initial state
+
 function clearDisplay() {
   displayText.textContent = "";
-}
-
-// This function updates the display with the given output and resets the calculator variables
-function updateDisplay(output) {
-  if (output.toString().length > 21) {
-    displayText.textContent = parseFloat(output.toFixed(2));
-  } else {
-    displayText.textContent = output;
-  }
-  resetVariables();
-  num1 = output.toString();
 }
 
 function resetVariables() {
@@ -139,4 +130,9 @@ function resetVariables() {
   num1 = "none";
   num2 = "none";
   final = null;
+}
+
+function toggleSign(number) {
+  if (number === "none") return number;
+  return (Number(number) * -1).toString();
 }
